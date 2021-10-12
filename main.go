@@ -13,8 +13,7 @@ import (
 )
 
 type jwtCustomClaims struct {
-	Name  string `json:"name"`
-	Admin bool   `json:"admin"`
+	Name string `json:"name"`
 	jwt.StandardClaims
 }
 
@@ -41,7 +40,6 @@ func login(c echo.Context) error {
 
 	claims := &jwtCustomClaims{
 		"Egor S",
-		true,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		},
