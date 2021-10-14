@@ -5,19 +5,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Document</title>
 </head>
 <body>
     <div class="login">
-        <form method="POST" action="/login">
-            <label for="username">Username</label><input name="username" type="text" value="">
-            <label for="password">Password</label><input name="password" type="password" value="">
-            <button type="submit">Login</button>
-        </form>
-    </div>
+        <label for="username">Username</label><input name="username" type="text" value="" id="username">
+        <label for="password">Password</label><input name="password" type="password" value="" id="password">
+        <button type="submit" id="login_button">Login</button>
+        </div>
     <br>
-    <a href="/restricted/sayhello">Say hello</a><br>
-    <a href="/restricted/secretinfo">Secret info</a>
+    <button id="sayhello">Sayhello</button><br>
+    <button id="secretinfo">Secret info</button><br>\
+    <script src="script.js"></script>
+
 </body>
 </html>
 {{end}}

@@ -26,10 +26,17 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func home(c echo.Context) error {
+	fmt.Println(c.Request().Header)
 	return c.Render(http.StatusOK, "login", nil)
 }
 
+func loggedin(c echo.Context) error {
+	fmt.Println(c.Request().Header)
+	return c.Render(http.StatusOK, "loggedin", "You are logged in")
+}
+
 func login(c echo.Context) error {
+	fmt.Println()
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 
@@ -51,14 +58,7 @@ func login(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
-	// Create cookie with jwt
-	c.SetCookie(&http.Cookie{
-		Name:  "Authorization",
-		Value: t,
-	})
-
-	return c.Redirect(http.StatusTemporaryRedirect, "/")
+	return c.JSON(http.StatusOK, echo.Map{"token": t})
 }
 
 func sayhello(c echo.Context) error {
@@ -72,8 +72,18 @@ func secretinfo(c echo.Context) error {
 	return c.Render(http.StatusOK, "restricted", "Information only for those who are logged in")
 }
 
+func Process(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+		return nil
+	}
+}
+
 func main() {
 	e := echo.New()
+	e.Static("/", "static")
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -87,13 +97,13 @@ func main() {
 	//Accesible routes
 	e.GET("/", home)
 	e.POST("/login", login)
+	e.GET("loggedin", loggedin)
 
 	// Restricted group
 	r := e.Group("/restricted")
 	config := middleware.JWTConfig{
-		Claims:      &jwtCustomClaims{},
-		SigningKey:  []byte("secret"),
-		TokenLookup: "cookie:Authorization",
+		Claims:     &jwtCustomClaims{},
+		SigningKey: []byte("secret"),
 	}
 	r.Use(middleware.JWTWithConfig(config))
 	r.GET("/sayhello", sayhello)
